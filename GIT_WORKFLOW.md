@@ -108,3 +108,5 @@ Podczas realizacji zadania napotkano trzy kluczowe problemy techniczne:
 # 5. Oczekiwany rezultat
 Kompletne, w pełni funkcjonalne repozytorium Git, które odwzorowuje zaawansowany cykl pracy DevOps (Git Flow). Wszystkie zmiany zostały poprawnie zabezpieczone,
  wersja produkcyjna oznaczona tagiem v1.0.0, a poprawka bezpieczeństwa (hotfix) pomyślnie zsynchronizowana między środowiskiem produkcyjnym a deweloperskim.
+
+KONIEC.
