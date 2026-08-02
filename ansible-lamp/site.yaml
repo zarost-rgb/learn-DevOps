@@ -1,0 +1,9 @@
+---
+- hosts: lamp_servers
+  become: true
+  roles:
+    - base
+    - database
+    - php
+    - web
+    - app
