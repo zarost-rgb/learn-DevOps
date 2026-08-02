@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LAMP Stack Demo</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; color: #333; }
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+        h1 { color: #0066cc; }
+        .success { color: green; font-weight: bold; }
+        .error { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>LAMP Stack with Ansible</h1>
+        <p>This page was deployed automatically using Ansible roles.</p>
+        
+        <h2>Database Connection Status:</h2>
+        <?php
+        $host = "{{ db_host }}";
+        $username = "{{ db_user }}";
+        $password = "{{ db_password }}";
+        $dbname = "{{ db_name }}";
+
+        $conn = new mysqli($host, $username, $password, $dbname);
+
+        if ($conn->connect_error) {
+            echo '<p class="error">Connection failed: ' . $conn->connect_error . '</p>';
+        } else {
+            echo '<p class="success">Successfully connected to MySQL database: <strong>' . $dbname . '</strong></p>';
+        }
+        
+        $conn->close();
+        ?>
+    </div>
+</body>
+</html>
