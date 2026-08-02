@@ -1,0 +1,3 @@
+Linia 1: start
+Linia 2: trminal
+Linia 2: terminal
