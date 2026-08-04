@@ -1,0 +1,3 @@
+# defaults file for roles/php
+---
+php_test_file_path: /var/www/html/info.php

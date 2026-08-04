@@ -1,7 +1,0 @@
----
-- name: Deploy PHP application template
-  template:
-    src: index.php.j2
-    dest: "{{ app_dir }}/index.php"
-    mode: '0644'
-  notify: restart apache

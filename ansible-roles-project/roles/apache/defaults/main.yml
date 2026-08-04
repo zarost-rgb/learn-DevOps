@@ -1,0 +1,6 @@
+# defaults file for roles/apache
+---
+apache_domain: example.com
+apache_document_root: /var/www/{{ apache_domain }}
+apache_admin_email: webmaster@example.com
+apache_port: 80

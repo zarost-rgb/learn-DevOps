@@ -1,0 +1,42 @@
+# tasks file for roles/apache
+---
+- name: Install Apache
+  apt:
+    name: apache2
+    state: present
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+  become: yes
+
+- name: Ensure Apache is running
+  service:
+    name: apache2
+    state: started
+    enabled: yes
+  become: yes
+
+- name: Create document root directory
+  file:
+    path: "{{ apache_document_root }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: 0755
+  become: yes
+
+- name: Create Apache virtual host
+  template:
+    src: vhost.conf.j2
+    dest: /etc/apache2/sites-available/{{ apache_domain }}.conf
+    owner: root
+    group: root
+    mode: 0644
+  become: yes
+  notify: reload apache
+
+- name: Enable Apache virtual host
+  command: a2ensite {{ apache_domain }}.conf
+  args:
+    creates: /etc/apache2/sites-enabled/{{ apache_domain }}.conf
+  become: yes
+  notify: reload apache

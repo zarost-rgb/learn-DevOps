@@ -1,0 +1,46 @@
+# tasks file for roles/mysql
+---
+- name: Install and configure MySQL safely
+  block:
+    - name: Install MySQL server
+      apt:
+        name:
+          - mysql-server
+          - python3-mysqldb
+        state: present
+      when: ansible_os_family == "Debian"
+      become: yes
+
+    - name: Ensure MySQL is running
+      service:
+        name: mysql
+        state: started
+        enabled: yes
+      become: yes
+
+    - name: Create MySQL database
+      mysql_db:
+        name: "{{ mysql_db_name }}"
+        state: present
+        login_unix_socket: /var/run/mysqld/mysqld.sock
+      become: yes
+
+    - name: Create MySQL user
+      mysql_user:
+        name: "{{ mysql_user }}"
+        password: "{{ mysql_password }}"
+        priv: "{{ mysql_db_name }}.*:ALL"
+        host: localhost
+        state: present
+        login_unix_socket: /var/run/mysqld/mysqld.sock
+      become: yes
+
+  rescue:
+    - name: Log message on failure
+      debug:
+        msg: "Blad przy instalacji lub ustawieniu MySQL! Sprawdziclogi servisa."
+
+  always:
+    - name: Ensure MySQL service state check is finished
+      debug:
+        msg: "Blok MySQL skonczyl prace."

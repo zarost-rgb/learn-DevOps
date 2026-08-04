@@ -1,0 +1,26 @@
+# tasks file for roles/php
+---
+- name: Install PHP and required modules
+  apt:
+    name:
+      - php
+      - php-mysql
+      - php-cli
+      - php-common
+      - php-json
+      - php-opcache
+      - php-readline
+      - libapache2-mod-php
+    state: present
+  when: ansible_os_family == "Debian"
+  become: yes
+  notify: restart apache
+
+- name: Create test PHP file
+  template:
+    src: info.php.j2
+    dest: "{{ php_test_file_path }}"
+    owner: www-data
+    group: www-data
+    mode: 0644
+  become: yes

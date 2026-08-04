@@ -1,0 +1,5 @@
+---
+# Общие переменные для всех окружений
+mysql_db_name: lamp_db
+mysql_user: lamp_user
+mysql_password: secure_password123
