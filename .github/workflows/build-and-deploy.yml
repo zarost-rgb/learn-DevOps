@@ -1,0 +1,69 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  APP_VERSION: v1.0.0
+  REGISTRY: ghcr.io
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      build-version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout kodu
+        uses: actions/checkout@v4
+
+      - name: Ustal wersję
+        id: version
+        run: |
+          VERSION="$APP_VERSION-$(git rev-parse --short HEAD)"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Build version: $VERSION"
+
+      - name: Utwórz artefakt (symulacja buildu)
+        run: |
+          mkdir -p build
+          echo "Version: ${{ steps.version.outputs.version }}" > build/version.txt
+          echo "Build time: $(date)" >> build/version.txt
+          echo "Repository: ${{ github.repository }}" >> build/version.txt
+          tar czf app-${{ steps.version.outputs.version }}.tar.gz build/
+
+      - name: Przesyłanie artefaktu
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-build
+          path: app-*.tar.gz
+          retention-days: 30
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:  
+      - name: Download artefaktu
+        uses: actions/download-artifact@v4
+        with:
+          name: app-build
+
+      - name: Wyświetl artefakt
+        run: |
+          ls -la *.tar.gz
+          tar tzf app-*.tar.gz
+
+      - name: Symulacja wdrażania
+        run: |
+          echo "=== Deployment Simulation ==="
+          echo "Wdrażanie wersji: ${{ needs.build.outputs.build-version }}"
+          echo "Środowisko: production"
+          echo "Status: SUCCESS"
+          echo "Timestamp: $(date -u +'%Y-%m-%dT%H:%M:%SZ')" 
+
+      - name: Notyfikacja wdrażania
+        run: |
+          echo "Powiadomienie: Aplikacja ${{ needs.build.outputs.build-version }} została wdrożona"
