@@ -1,7 +1,7 @@
 name: Test and Build Workflow
 
 on:
-      pussh:
+      push:
         branches: [ main, develop ]
       pull_request:
         branches: [ main ]
