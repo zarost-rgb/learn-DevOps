@@ -61,7 +61,6 @@ jobs:
           - name: Analiza kodu (pylint)
             run: |
               pylint **/*.py --exit-zero || true
- 
      status:
             needs: [test, lint]
             runs-on: ubuntu-latest
