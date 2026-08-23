@@ -52,8 +52,8 @@ on:
 
           - name: Analiza kodu (pylint)
             run: |
-            flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics || true
-
+              flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics || true
+              
           - name: Analiza kodu (pylint)
             run: |
               pylint **/*.py --exit-zero || true
