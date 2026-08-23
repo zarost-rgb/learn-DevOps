@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Checkout kodu
         uses: actions/checkout@v4
+        with:
+          submodules: false
 
       - name: Ustal wersję
         id: version
