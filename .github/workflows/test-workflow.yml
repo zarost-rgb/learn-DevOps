@@ -1,75 +1,75 @@
 name: Test and Build Workflow
 
-  on:
-    push:
-      branches: [ main, develop ]
-    pull_request:
-      branches: [ main ]
-    jobs:
-       test:
-         runs-on: ubuntu-latest
+   on:
+     push:
+       branches: [ main, develop ]
+     pull_request:
+       branches: [ main ]
+     jobs:
+        test:
+          runs-on: ubuntu-latest
         
-         strategy:
-           matrix:
-             python-version: ['3.9', '3.10', '3.11']
+          strategy:
+            matrix:
+              python-version: ['3.9', '3.10', '3.11']
 
-         steps:
-         - name: Chekout kodu
-           uses: actions/checkout@v3
+          steps:
+          - name: Chekout kodu
+            uses: actions/checkout@v3
 
-         - name: Instalacja Python ${{ matrix.python-version }}
-           uses: action/setup-python@v4
-           with:
-             python-version: ${{ matrix.python-version }}
+          - name: Instalacja Python ${{ matrix.python-version }}
+            uses: action/setup-python@v4
+            with:
+              python-version: ${{ matrix.python-version }}
 
-         - name: Instalacja zależności
-           run: |
-             python -m pip install --upgrade pip
-             pip install pytest pytest-cov
+          - name: Instalacja zależności
+            run: |
+              python -m pip install --upgrade pip
+              pip install pytest pytest-cov
 
-         - name: Uruchom testy
-           run: |
-             pytest --cov=. --cov-report=xml --cov-report=term
+          - name: Uruchom testy
+            run: |
+              pytest --cov=. --cov-report=xml --cov-report=term
 
-         - name: Wiświetl wyniki
-           if: always()
-           run: |
-             echo "=== Test Summary ---"
-             echo "Python Version: ${{ matrix.python-version }}"
-             echo "Status: ${{ job.status }}"
+          - name: Wiświetl wyniki
+            if: always()
+            run: |
+              echo "=== Test Summary ---"
+              echo "Python Version: ${{ matrix.python-version }}"
+              echo "Status: ${{ job.status }}"
 
-       lint:
-         runs-on: ubuntu-latest
+        lint:
+          runs-on: ubuntu-latest
 
-         steps:
-         - name: Checkout kodu
-           uses: actions/setup-python@v3
+          steps:
+          - name: Checkout kodu
+            uses: actions/setup-python@v3
 
-         - name: Instalacja Python
-           uses: actions/setup-python@v4
-           with:
-              python-version: '3.11'
+          - name: Instalacja Python
+            uses: actions/setup-python@v4
+            with:
+               python-version: '3.11'
               
-         - name: Instalacja narzędzi
-           run: |
-             pip install flake8 pylint
+          - name: Instalacja narzędzi
+            run: |
+              pip install flake8 pylint
 
-         - name: Analiza kodu (flake8)
-           run: |
-             flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics || true
+          - name: Analiza kodu (flake8)
+            run: |
+              flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics || true
               
-         - name: Analiza kodu (pylint)
-           run: |
-              pylint **/*.py --exit-zero || true
+          - name: Analiza kodu (pylint)
+            run: |
+               pylint **/*.py --exit-zero || true
 
-         status:
-           needs: [test, lint]
-           runs-on: ubuntu-latest
-           if: always()
+          status:
+            needs: [test, lint]
+            runs-on: ubuntu-latest
+            if: always()
 
-           steps:
-           - name: Podsumowanie statusu
-             run: |
-             echo "Test status: ${{ needs.test.result }}"
-             echo "Lint status: ${{ needs.lint.result }}"
+            steps:
+            - name: Podsumowanie statusu
+              run: |
+              echo "Test status: ${{ needs.test.result }}"
+              echo "Lint status: ${{ needs.lint.result }}"
             
