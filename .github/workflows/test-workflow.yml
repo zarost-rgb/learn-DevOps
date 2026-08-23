@@ -1,6 +1,6 @@
 name: Test and Build Workflow
 
-   on:
+on:
      push:
        branches: [ main, develop ]
      pull_request:
