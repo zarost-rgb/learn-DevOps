@@ -1,6 +1,6 @@
 name: Test and Build Workflow
 
-    on:
+  on:
       pussh:
         branches: [ main, develop ]
       pull_request:
