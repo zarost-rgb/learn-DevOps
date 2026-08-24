@@ -1,0 +1,84 @@
+name: Advanced Conditional CI/CD Workflow
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  ENVIRONMENT: production
+  BUILD_DIR: dist
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout kodu
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Przygotowanie i kompilacja projektu
+        run: |
+          echo "Rozpoczynanie kompilacji..."
+          mkdir -p $BUILD_DIR
+          echo "App Version: 1.0.0" > $BUILD_DIR/app.txt
+          echo "Build Date: $(date)" >> $BUILD_DIR/app.txt
+
+      - name: Zapisywanie artefaktu (Tylko dla main)
+        if: github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifact
+          path: ${{ env.BUILD_DIR }}/
+          retention-days: 7
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout kodu
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Uruchomienie testów
+        run: |
+          echo "Uruchamianie testów..."
+          python3 -c "print('Wszystkie testy przeszły pomyślnie!')"
+
+  deploy:
+    needs: [build, test]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Pobranie artefaktu
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifact
+          path: ./downloaded-build
+
+      - name: Symulacja wdrażania na produkcję
+        run: |
+          echo "=== Wdrażanie na środowisko: $ENVIRONMENT ==="
+          cat ./downloaded-build/app.txt
+          echo "Status: SUCCESS"
+
+  status_report:
+    needs: [build, test, deploy]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Wyświetlenie podsumowania
+        run: |
+          echo "=== PODSUMOWANIE WORKFLOW ==="
+          echo "Build status: ${{ needs.build.result }}"
+          echo "Test status: ${{ needs.test.result }}"
+          echo "Deploy status: ${{ needs.deploy.result }}"
